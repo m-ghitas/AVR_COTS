@@ -7,20 +7,19 @@
 /****************************************************************************************************/
 /****************************************************************************************************/
 
+#ifndef DIO_REG_H
+#define DIO_REG_H
 
-#ifndef DIO_REGISTER_H_
-#define DIO_REGISTER_H_
+#define PORTB  *((volatile uint8*)0x25)
+#define DDRB   *((volatile uint8*)0x24)
+#define PINB   *((volatile uint8*)0x23)
 
-#define PORTB  *((volatile u8*)0x25)
-#define DDRB   *((volatile u8*)0x24)
-#define PINB   *((volatile u8*)0x23)
+#define PORTC  *((volatile uint8*)0x28)
+#define DDRC   *((volatile uint8*)0x27)
+#define PINC   *((volatile uint8*)0x26)
 
-#define PORTC  *((volatile u8*)0x28)
-#define DDRC   *((volatile u8*)0x27)
-#define PINC   *((volatile u8*)0x26)
-
-#define PORTD  *((volatile u8*)0x2B)
-#define DDRD   *((volatile u8*)0x2A)
-#define PIND   *((volatile u8*)0x29)
+#define PORTD  *((volatile uint8*)0x2B)
+#define DDRD   *((volatile uint8*)0x2A)
+#define PIND   *((volatile uint8*)0x29)
 
 #endif

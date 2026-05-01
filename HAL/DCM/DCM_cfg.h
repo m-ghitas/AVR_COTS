@@ -21,7 +21,7 @@
 
 static const DCM_Config_t DCM_strConfig[DCM_MAX] =
 {
-		{DIO_u8PORTB, DIO_u8PIN2, DIO_u8PIN3}
+		{DIO_u8PORTD, DIO_u8PIN5, DIO_u8PIN6}
 };
 
 #endif /* DCM_CFG_H_ */

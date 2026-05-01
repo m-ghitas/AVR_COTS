@@ -7,13 +7,13 @@
 *******************************************/
 
 
-#define PORTB  		*((volatile u8*)0x25)
-#define DDRB   		*((volatile u8*)0x24)
+#define PORTB  		*((volatile uint8*)0x25)
+#define DDRB   		*((volatile uint8*)0x24)
 
-#define PORTC  		*((volatile u8*)0x28)
-#define DDRC   		*((volatile u8*)0x27)
+#define PORTC  		*((volatile uint8*)0x28)
+#define DDRC   		*((volatile uint8*)0x27)
 
-#define PORTD  		*((volatile u8*)0x2B)
-#define DDRD   		*((volatile u8*)0x2A)
+#define PORTD  		*((volatile uint8*)0x2B)
+#define DDRD   		*((volatile uint8*)0x2A)
 
 #endif

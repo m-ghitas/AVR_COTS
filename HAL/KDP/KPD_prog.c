@@ -1,51 +1,69 @@
 #include "STD_TYPES.h"
 #include "ErrType.h"
-
 #include "DIO_interface.h"
 
 #include "KPD_interface.h"
 #include "KPD_prv.h"
 #include "KPD_cfg.h"
+#include <util/delay.h>
 
 uint8 KPD_u8GetPressedKey(void)
 {
-	uint8 Local_u8ColIdx, Local_u8RowIdx, Local_u8PinState, Local_u8PressedKey = KPD_u8NO_PRESSED_KEY_VAL;
+    uint8 col, row, pinState;
+    uint8 key = KPD_u8NO_PRESSED_KEY_VAL;
 
-	uint8 Local_au8ColArr[COL_NUM] = {KPD_u8COL0_PIN,KPD_u8COL1_PIN,KPD_u8COL2_PIN,KPD_u8COL3_PIN};
+    uint8 colPins[COL_NUM] = {
+        KPD_u8COL0_PIN,
+        KPD_u8COL1_PIN,
+        KPD_u8COL2_PIN,
+        KPD_u8COL3_PIN
+    };
 
-	uint8 Local_au8RowArr[ROW_NUM] = {KPD_u8ROW0_PIN,KPD_u8ROW1_PIN,KPD_u8ROW2_PIN,KPD_u8ROW3_PIN};
+    uint8 rowPins[ROW_NUM] = {
+        KPD_u8ROW0_PIN,
+        KPD_u8ROW1_PIN,
+        KPD_u8ROW2_PIN,
+        KPD_u8ROW3_PIN
+    };
 
-	uint8 Local_au8KPDArr[ROW_NUM][COL_NUM] = KPD_au8_BUTTON_ARR;
-	
-	/*Activate the column pins*/
-	for(Local_u8ColIdx=0u; Local_u8ColIdx < COL_NUM ; Local_u8ColIdx++)
-	{
-		/*Activate the current column*/
-		DIO_u8SetPinValue(KPD_u8COL_PORT,Local_au8ColArr[Local_u8ColIdx], DIO_u8PIN_LOW);
+    uint8 keyMap[ROW_NUM][COL_NUM] = KPD_au8_BUTTON_ARR;
 
-		/*Read the row pins*/
-		for(Local_u8RowIdx = 0u; Local_u8RowIdx < ROW_NUM; Local_u8RowIdx++)
-		{
-			/*Read the current row*/
-			DIO_u8ReadPinValue(KPD_u8ROW_PORT, Local_au8RowArr[Local_u8RowIdx], &Local_u8PinState);
+    for(col = 0; col < COL_NUM; col++)
+    {
+        // Activate column (LOW)
+        DIO_u8SetPinValue(KPD_u8COL_PORT, colPins[col], DIO_u8PIN_LOW);
 
-			if(Local_u8PinState == DIO_u8PIN_LOW)
-			{
-				Local_u8PressedKey = Local_au8KPDArr[Local_u8RowIdx][Local_u8ColIdx];
+        for(row = 0; row < ROW_NUM; row++)
+        {
+            DIO_u8ReadPinValue(KPD_u8ROW_PORT, rowPins[row], &pinState);
 
-				/*Polling with blocking(waiting) until the key is released*/
-				while(Local_u8PinState == DIO_u8PIN_LOW)
-				{
-					DIO_u8ReadPinValue(KPD_u8ROW_PORT, Local_au8RowArr[Local_u8RowIdx], &Local_u8PinState);
-				}
+            if(pinState == DIO_u8PIN_LOW)
+            {
+                // debounce
+                _delay_ms(20);
 
-				return Local_u8PressedKey;
-			}
-		}
+                DIO_u8ReadPinValue(KPD_u8ROW_PORT, rowPins[row], &pinState);
+                if(pinState == DIO_u8PIN_LOW)
+                {
+                    key = keyMap[row][col];
 
-		/*Deactivate the current column*/
-		DIO_u8SetPinValue(KPD_u8COL_PORT,Local_au8ColArr[Local_u8ColIdx], DIO_u8PIN_HIGH);
-	}
+                    // wait until release
+                    while(pinState == DIO_u8PIN_LOW)
+                    {
+                        DIO_u8ReadPinValue(KPD_u8ROW_PORT, rowPins[row], &pinState);
+                    }
 
-	return Local_u8PressedKey;
+                    // deactivate column before return
+                    DIO_u8SetPinValue(KPD_u8COL_PORT, colPins[col], DIO_u8PIN_HIGH);
+
+                    return key;
+                }
+            }
+        }
+
+        // Deactivate column
+        DIO_u8SetPinValue(KPD_u8COL_PORT, colPins[col], DIO_u8PIN_HIGH);
+    }
+
+    return key;
 }

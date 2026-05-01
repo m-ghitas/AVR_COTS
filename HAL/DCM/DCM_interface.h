@@ -8,6 +8,8 @@
 #ifndef DCM_INTERFACE_H_
 #define DCM_INTERFACE_H_
 
+#include "SWITCH_prv.h"
+
 typedef struct
 {
 	uint8 DCM_u8Port;
